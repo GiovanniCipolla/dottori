@@ -2,17 +2,27 @@ package it.prova.dottori.service;
 
 import java.util.List;
 
-import it.prova.dottori.dto.DottoreDTO;
+import it.prova.dottori.model.Dottore;
 
 public interface DottoreService {
  
-	public DottoreDTO inserisciNuovo(DottoreDTO dottore);
+	List<Dottore> listAllElements();
 
-	public List<DottoreDTO> listAll();
+	Dottore caricaSingoloElemento(Long id);
+
+	Dottore aggiorna(Dottore dottoreInstance);
+
+	void inserisciNuovo(Dottore dottoreInstance);
+
+	void rimuovi(Long idToRemove);
+
+	Dottore findByCodFiscalePazienteAttualmenteInVisita(String codFiscalePazienteAttualmenteInVisitaInstance);
+
+	Dottore findByCodiceDottore(String codiceDottoreInstance);
+
+	Dottore verificaDisponibilita(String codiceDottoreInstance);
 	
-	public DottoreDTO aggiorna(DottoreDTO dottore);
+	Dottore impostaDottore(Dottore dottoreInstance);
 	
-	public DottoreDTO caricaSingoloElemento(Long id);
-	
-	public void rimuovi(Long id);
+	Dottore ricovera(Dottore dottoreInstance);
 }

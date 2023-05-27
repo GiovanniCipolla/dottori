@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import it.prova.dottori.dto.DottoreDTO;
 import it.prova.dottori.model.Dottore;
 import it.prova.dottori.repository.DottoreRepository;
 
@@ -14,41 +13,69 @@ import it.prova.dottori.repository.DottoreRepository;
 @Transactional
 public class DottoreServiceImpl implements DottoreService {
 
+
 	@Autowired
 	private DottoreRepository repository;
-	
-	@Override
-	@Transactional
-	public DottoreDTO inserisciNuovo(DottoreDTO dottore) {
-		repository.save(dottore.buildDottoreModel());
-		return dottore;
-	}
-	
 
 	@Override
-	@Transactional(readOnly = true)
-	public List<DottoreDTO> listAll() {
-		return DottoreDTO.createDottoreDTOListFromModelList((List<Dottore>) repository.findAll());
+	public List<Dottore> listAllElements() {
+		return (List<Dottore>) repository.findAll();
 	}
 
 	@Override
-	@Transactional
-	public DottoreDTO aggiorna(DottoreDTO dottore) {
-		repository.save(dottore.buildDottoreModel());
-		return dottore;
+	public Dottore caricaSingoloElemento(Long id) {
+		return repository.findById(id).orElse(null);
 	}
 
 	@Override
-	@Transactional(readOnly = true)
-	public DottoreDTO caricaSingoloElemento(Long id) {
-		return DottoreDTO.buildDottoreDTOFromModel(repository.findById(id).orElse(null));
+	public Dottore aggiorna(Dottore dottoreInstance) {
+		return repository.save(dottoreInstance);
 	}
 
 	@Override
-	@Transactional
-	public void rimuovi(Long id) {
-		repository.deleteById(id);
+	public void inserisciNuovo(Dottore dottoreInstance) {
 		
+		dottoreInstance.setInServizio(true);
+		dottoreInstance.setInVisita(false);
+		repository.save(dottoreInstance);
+	}
+
+	@Override
+	public void rimuovi(Long idToRemove) {
+		repository.deleteById(idToRemove);
+	}
+
+	@Override
+	public Dottore findByCodFiscalePazienteAttualmenteInVisita(String codFiscalePazienteAttualmenteInVisitaInstance) {
+		return repository
+				.findDottoreByCodFiscalePazienteAttualmenteInVisita(codFiscalePazienteAttualmenteInVisitaInstance);
+	}
+
+	@Override
+	public Dottore findByCodiceDottore(String codiceDottoreInstance) {
+		return repository.caricaDottoreFromCodiceDottore(codiceDottoreInstance);
+
+	}
+	
+
+	@Override
+	public Dottore verificaDisponibilita(String cd) {
+		return repository.caricaDottoreFromCodiceDottore(cd);
+	}
+
+	@Override
+	public Dottore impostaDottore(Dottore dottore) {
+		Dottore result = repository.caricaDottoreFromCodiceDottore(dottore.getCodiceDottore());
+		result.setCodFiscalePazienteAttualmenteInVisita(dottore.getCodFiscalePazienteAttualmenteInVisita());
+		return repository.save(result);
+	}
+
+	@Override
+	public Dottore ricovera(Dottore dottore) {
+		Dottore result = repository.caricaDottoreFromCodiceDottore(dottore.getCodiceDottore());
+		result.setCodFiscalePazienteAttualmenteInVisita(null);
+		result.setInVisita(false);
+		return repository.save(result);
 	}
 
 }
