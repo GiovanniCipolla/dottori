@@ -2,6 +2,8 @@ package it.prova.dottori.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
 import it.prova.dottori.model.Dottore;
 
 public interface DottoreService {
@@ -27,4 +29,6 @@ public interface DottoreService {
 	Dottore ricovera(Dottore dottoreInstance);
 	
 	Dottore cambiaServizio(Long id);
+	
+	public Page<Dottore> findByExampleWithPagination(Dottore example, Integer pageNo, Integer pageSize, String sortBy);
 }

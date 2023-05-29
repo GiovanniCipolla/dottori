@@ -1,8 +1,17 @@
 package it.prova.dottori.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.criteria.Predicate;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -88,7 +97,7 @@ public class DottoreServiceImpl implements DottoreService {
 		Dottore dottoreInstance = repository.caricaDottoreFromCodiceDottore(dottore.getCodiceDottore());
 
 		if (!dottoreInstance.isInServizio() || dottoreInstance.isInVisita())
-		throw new RuntimeException("dottore non disponibile");
+			throw new RuntimeException("dottore non disponibile");
 
 		dottoreInstance.setCodFiscalePazienteAttualmenteInVisita(dottore.getCodFiscalePazienteAttualmenteInVisita());
 
@@ -130,4 +139,38 @@ public class DottoreServiceImpl implements DottoreService {
 		return dottore;
 	}
 
+	@Override
+	public Page<Dottore> findByExampleWithPagination(Dottore example, Integer pageNo, Integer pageSize, String sortBy) {
+		Specification<Dottore> specificationCriteria = (root, query, cb) -> {
+
+			List<Predicate> predicates = new ArrayList<Predicate>();
+
+			if (StringUtils.isNotEmpty(example.getNome()))
+				predicates.add(cb.like(cb.upper(root.get("nome")), "%" + example.getNome().toUpperCase() + "%"));
+			if (StringUtils.isNotEmpty(example.getCognome()))
+				predicates.add(cb.like(cb.upper(root.get("cognome")), "%" + example.getCognome().toUpperCase() + "%"));
+			if (StringUtils.isNotEmpty(example.getCodiceDottore()))
+				predicates.add(cb.like(cb.upper(root.get("codiceDottore")),
+						"%" + example.getCodiceDottore().toUpperCase() + "%"));
+			if (StringUtils.isNotEmpty(example.getCodFiscalePazienteAttualmenteInVisita()))
+				predicates.add(cb.like(cb.upper(root.get("codFiscalePazienteAttualmenteInVisita")),
+						"%" + example.getCodFiscalePazienteAttualmenteInVisita().toUpperCase() + "%"));
+
+//			if (example.isInServizio() != null)
+//				predicates.add(cb.equal(root.get("inServizio"), example.isInServizio()));
+//			if (example.isInVisita() != null)
+//				predicates.add(cb.equal(root.get("inVisita"), example.isInVisita()));
+
+			return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+		};
+
+		Pageable paging = null;
+		// se non passo parametri di paginazione non ne tengo conto
+		if (pageSize == null || pageSize < 10)
+			paging = Pageable.unpaged();
+		else
+			paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
+
+		return repository.findAll(specificationCriteria, paging);
+	}
 }

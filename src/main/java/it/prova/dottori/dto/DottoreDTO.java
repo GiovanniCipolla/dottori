@@ -37,7 +37,7 @@ public class DottoreDTO {
 	private boolean inServizio;
 
 	public Dottore buildDottoreModel() {
-		Dottore result = Dottore.builder().id(this.id).nome(this.nome).cognome(this.cognome)
+		Dottore result = Dottore.builder().id(this.id).nome(this.nome).cognome(this.cognome).codiceDottore(this.codiceDottore)
 				.codFiscalePazienteAttualmenteInVisita(this.codFiscalePazienteAttualmenteInVisita).build();
 		return result;
 	}
