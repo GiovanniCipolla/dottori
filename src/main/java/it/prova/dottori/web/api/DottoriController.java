@@ -1,6 +1,9 @@
 package it.prova.dottori.web.api;
 
 import java.util.List;
+
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,11 +29,13 @@ public class DottoriController {
 	private DottoreService dottoreService;
 
 	@GetMapping
+	@ResponseStatus(HttpStatus.ACCEPTED)
 	public List<DottoreDTO> listAll() {
 		return DottoreDTO.createDottoreDTOListFromModelList(dottoreService.listAllElements());
 	}
 
 	@GetMapping("/{cf}")
+	@ResponseStatus(HttpStatus.ACCEPTED)
 	public DottoreDTO cercaPerCodiceFiscalePazinete(@PathVariable(required = true) String cf) {
 
 		Dottore result = dottoreService.findByCodFiscalePazienteAttualmenteInVisita(cf);
@@ -43,7 +48,7 @@ public class DottoriController {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public void inserisciDottore(@RequestBody DottoreDTO dottore) {
+	public void inserisciDottore(@Valid @RequestBody DottoreDTO dottore) {
 
 		if (dottore.getId() != null)
 			throw new RuntimeException("impossibile inserire un nuovo record se contenente id");
@@ -73,6 +78,7 @@ public class DottoriController {
 	}
 
 	@GetMapping("/verificaDisponibilitaDottore/{cd}")
+	@ResponseStatus(HttpStatus.ACCEPTED)
 	public DottoreDTO assegnaPaziente(@PathVariable(required = true) String cd) {
 		Dottore result = dottoreService.verificaDisponibilita(cd);
 
@@ -86,6 +92,7 @@ public class DottoriController {
 	}
 
 	@PostMapping("/impostaVisita")
+	@ResponseStatus(HttpStatus.ACCEPTED)
 	public DottorePazienteDTO impostaVisita(@RequestBody DottorePazienteDTO dottorePazienteDTO) {
 
 		if (dottorePazienteDTO.getCodFiscalePazienteAttualmenteInVisita() == null)
@@ -99,6 +106,7 @@ public class DottoriController {
 	}
 
 	@PostMapping("/ricovera")
+	@ResponseStatus(HttpStatus.ACCEPTED)
 	public DottorePazienteDTO ricovera(@RequestBody DottorePazienteDTO dottorePazienteDTO) {
 		
 		Dottore dottore = Dottore.builder().codiceDottore(dottorePazienteDTO.getCodiceDottore())
@@ -110,6 +118,7 @@ public class DottoriController {
 
 	
 	@PutMapping("/cambiaInServizio/{id}")
+	@ResponseStatus(HttpStatus.ACCEPTED)
 	public DottoreDTO cambiaServizio(@PathVariable(required = true) Long id){
 		
 		Dottore dottore = dottoreService.caricaSingoloElemento(id);

@@ -44,7 +44,7 @@ public class DottoreDTO {
 
 	public static DottoreDTO buildDottoreDTOFromModel(Dottore dottoreModel) {
 		DottoreDTO result = DottoreDTO.builder().id(dottoreModel.getId()).nome(dottoreModel.getNome())
-				.cognome(dottoreModel.getCognome())
+				.cognome(dottoreModel.getCognome()).codiceDottore(dottoreModel.getCodiceDottore())
 				.codFiscalePazienteAttualmenteInVisita(dottoreModel.getCodFiscalePazienteAttualmenteInVisita())
 				.inServizio(dottoreModel.isInServizio()).inVisita(dottoreModel.isInVisita()).build();
 		return result;
