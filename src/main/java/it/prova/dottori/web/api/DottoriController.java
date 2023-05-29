@@ -1,8 +1,6 @@
 package it.prova.dottori.web.api;
 
 import java.util.List;
-
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,6 +32,7 @@ public class DottoriController {
 
 	@GetMapping("/{cf}")
 	public DottoreDTO cercaPerCodiceFiscalePazinete(@PathVariable(required = true) String cf) {
+
 		Dottore result = dottoreService.findByCodFiscalePazienteAttualmenteInVisita(cf);
 
 		if (result == null)
@@ -89,6 +88,9 @@ public class DottoriController {
 	@PostMapping("/impostaVisita")
 	public DottorePazienteDTO impostaVisita(@RequestBody DottorePazienteDTO dottorePazienteDTO) {
 
+		if (dottorePazienteDTO.getCodFiscalePazienteAttualmenteInVisita() == null)
+			throw new RuntimeException("i valori di input non devono essere nulli");
+
 		Dottore dottore = Dottore.builder().codiceDottore(dottorePazienteDTO.getCodiceDottore())
 				.codFiscalePazienteAttualmenteInVisita(dottorePazienteDTO.getCodFiscalePazienteAttualmenteInVisita())
 				.build();
@@ -98,9 +100,25 @@ public class DottoriController {
 
 	@PostMapping("/ricovera")
 	public DottorePazienteDTO ricovera(@RequestBody DottorePazienteDTO dottorePazienteDTO) {
+		
 		Dottore dottore = Dottore.builder().codiceDottore(dottorePazienteDTO.getCodiceDottore())
 				.codFiscalePazienteAttualmenteInVisita(dottorePazienteDTO.getCodFiscalePazienteAttualmenteInVisita())
 				.build();
+		
 		return DottorePazienteDTO.buildDottoreDTOFromModel(dottoreService.ricovera(dottore));
 	}
+
+	
+	@PutMapping("/cambiaInServizio/{id}")
+	public DottoreDTO cambiaServizio(@PathVariable(required = true) Long id){
+		
+		Dottore dottore = dottoreService.caricaSingoloElemento(id);
+
+		if (dottore == null)
+			throw new RuntimeException("nessun dottore trovato");
+
+		return DottoreDTO.buildDottoreDTOFromModel(dottoreService.cambiaServizio(id));
+		
+	}
+	
 }

@@ -25,4 +25,6 @@ public interface DottoreService {
 	Dottore impostaDottore(Dottore dottoreInstance);
 	
 	Dottore ricovera(Dottore dottoreInstance);
+	
+	Dottore cambiaServizio(Long id);
 }

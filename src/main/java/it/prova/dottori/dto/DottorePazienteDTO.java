@@ -1,5 +1,7 @@
 package it.prova.dottori.dto;
 
+import javax.validation.constraints.NotBlank;
+
 import it.prova.dottori.model.Dottore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +14,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class DottorePazienteDTO {
 
+	@NotBlank(message = "{codiceDottore.notblank}")
 	private String codiceDottore;
+	@NotBlank(message = "{codiceCfPaziente.notblank}")
 	private String codFiscalePazienteAttualmenteInVisita;
 
 	public void setCodFiscalePazienteAttualmenteInVisita(String codFiscalePazienteAttualmenteInVisita) {
